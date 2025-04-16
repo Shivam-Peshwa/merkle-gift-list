@@ -4,20 +4,23 @@ const { hexToBytes, bytesToHex } = require('ethereum-cryptography/utils');
 const concat = (left, right) => keccak256(Buffer.concat([left, right]));
 
 function verifyProof(proof, leaf, root) {
-  proof = proof.map(({data, left}) => ({ 
-    left, data: hexToBytes(data)
+  proof = proof.map(({ data, left }) => ({
+    left,
+    data: hexToBytes(data)
   }));
-  let data = keccak256(Buffer.from(leaf));
+
+  let currentHash = leaf;
 
   for (let i = 0; i < proof.length; i++) {
     if (proof[i].left) {
-      data = concat(proof[i].data, data);
+      currentHash = concat(proof[i].data, currentHash);
     } else {
-      data = concat(data, proof[i].data);
+      currentHash = concat(currentHash, proof[i].data);
     }
   }
 
-  return bytesToHex(data) === root;
+  const isValid = bytesToHex(currentHash) === root;
+  return isValid;
 }
 
 module.exports = verifyProof;

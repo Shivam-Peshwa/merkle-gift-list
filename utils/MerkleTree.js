@@ -28,10 +28,10 @@ class MerkleTree {
         newLayer.push(this.concat(left, right));
 
         if (i === index || i === index - 1) {
-          let isLeft = !(index % 2);
+          const isCurrentNodeLeft = index % 2 === 0;
           proof.push({
-            data: isLeft ? bytesToHex(right) : bytesToHex(left),
-            left: !isLeft,
+            data: bytesToHex(isCurrentNodeLeft ? right : left),
+            left: !isCurrentNodeLeft
           });
         }
       }
@@ -44,7 +44,6 @@ class MerkleTree {
     );
   }
 
-  // private function
   _getRoot(leaves = this.leaves) {
     if (leaves.length === 1) {
       return leaves[0];
@@ -68,3 +67,4 @@ class MerkleTree {
 }
 
 module.exports = MerkleTree;
+
